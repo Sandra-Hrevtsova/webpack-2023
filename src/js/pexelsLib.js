@@ -1,12 +1,13 @@
-import './sass/main.scss';
-import axios from 'axios';
+import { createClient } from 'pexels';
+
+const API_KEY = '563492ad6f91700001000001390f9fee0a794c1182a72e49e0e0eae2';
+const client = createClient(API_KEY);
 
 let query, page;
 
 const form = document.getElementById('searchForm');
 const list = document.getElementById('results');
 const loadMore = document.getElementById('load-more');
-
 
 form.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -18,18 +19,9 @@ form.addEventListener('submit', (e) => {
 loadMore.addEventListener('click', (e) => getFetch(query, page));
 
 function getFetch(value, p) {
-    const API_KEY = '563492ad6f91700001000001390f9fee0a794c1182a72e49e0e0eae2';
-    const options = {
-        headers: {
-            Authorization: API_KEY
-        }
-    }
-    let queryParams = `?query=${value}&orientation=landscape&per_page=1&page=${p}`;
-    const url = `https://api.pexels.com/v1/search${queryParams}`;
-    return axios.get(url, options).then(({data}) => {
-        console.log(data);
-        page = data.page + 1;
-        getResults(data.photos)
+    return client.photos.search({query: value, page: p, per_page: 2}).then((result) => {
+        page = result.page + 1;
+        getResults(result.photos)
     })
 }
 
